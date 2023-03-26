@@ -1,0 +1,20 @@
+{
+  "_id1": {
+    "firstName": "Benabou",
+    "lastName": "Mohamed",
+    "email": "momo@hotmail.fr",
+    "password" : "test"
+  },
+  "_id2": {
+    "firstName": "Megri",
+    "lastName": "Karim",
+    "email": "karim@hotmail.fr",
+    "password" : "test"
+  },
+  "_id3": {
+    "firstName": "test",
+    "lastName": "test",
+    "email": "test@hotmail.fr",
+    "password" : "test"
+  }
+}
