@@ -1,14 +1,17 @@
 import {useState} from 'react';
 import {StyleSheet, Text, View, Button, TextInput, Image} from 'react-native';
-import {user, setConnected} from '../store/store';
-import urlGetUser from './../env';
+import {userConnected, setConnected} from '../store/store';
+import usersBdd from './../store/bdd.json';
 
 export default function Register({navigation}) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
   const handleSubmit = async () => await fetchUser();
 
   const fetchUser = async () => {
+    //CODE POUR LA VRAIE BDD
+    /*
     const userResponse = await fetch(
       `https://gestionperso-default-rtdb.europe-west1.firebasedatabase.app/users.json`,
       {
@@ -22,15 +25,15 @@ export default function Register({navigation}) {
     if (!userResponse.ok) {
       throw new Error('Erreur dans la base de données');
     }
-
     const userData = userResponse.json();
-
+    */
     /*
         if(!userData) {
             console.log('Ce user n\'existe pas')
         }
-        */
+    */
 
+    /*
     userData.then(response => {
       Object.values(response).forEach(value => {
         if (value.email === email && value.password === password) {
@@ -41,7 +44,33 @@ export default function Register({navigation}) {
         }
       });
     });
-    
+  
+    */
+
+    //CODE A SUPPRIMER QUAND VRAIE BDD
+    //Récupération de la liste des users sous format json
+    const listOfUsers = JSON.parse(JSON.stringify(usersBdd));
+    /*
+    Boucle sur la liste transformé en objet JS.Si le user existe dans la liste , on set le userConnected dans le store avec les informations
+    de ce user.
+    */
+    Object.values(listOfUsers).map(user => {
+      if (user.email === email && user.password === password) {
+        setConnected(user);
+        return;
+      }
+    });
+
+    //On log un message d'erreur si le user n'existe pas
+    if (!userConnected.isConnected) {
+      setErrorMessage('email ou mot de passe erroné !');
+      setTimeout(() => {
+        setErrorMessage('');
+      }, 3000);
+    } else {
+      //Sinon on redirige vers la page des comptes
+      navigation.navigate('Balance');
+    }
   };
 
   return (
@@ -72,6 +101,7 @@ export default function Register({navigation}) {
           onChangeText={text => setPassword(text)}
           value={password}
         />
+        <Text style={{fontSize: 15, color:'red'}}>{errorMessage}</Text>
         <View style={{marginVertical: 30}}>
           <Button title="valider" onPress={handleSubmit} />
         </View>
