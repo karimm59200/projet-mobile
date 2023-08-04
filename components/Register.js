@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { StyleSheet, Text, View, Button, TextInput, Image } from 'react-native'
+import { StyleSheet, Text, View, Button, TextInput, Image, ScrollView } from 'react-native'
 import urlBdd from './../env';
 
 
@@ -61,7 +61,9 @@ export default function Register({ navigation } ) {
    
 
   return (
-    <View style={{flex:1, justifyContent:'center', alignItems:'center'}}>
+    <>
+    <ScrollView >
+        <View style={{flex:1, justifyContent:'center', alignItems:'center'}}>
         <Text style={{fontWeight: 'bold', fontFamily:'Georgia', fontSize: 25 }}>"Les cartes de crédit ne sont pas vos amies"</Text>
         <Text style={{fontWeight: 'bold', fontFamily:'Georgia', fontSize: 25 }}> Warren Buffett</Text>
       <Image style={styles.image} source = {require('../assets/kiss.png')} resizeMode='contain'/>
@@ -73,7 +75,10 @@ export default function Register({ navigation } ) {
         <View style={{marginVertical:30}}><Button  title="valider" onPress={handleSubmit}/></View>
     </View>
         { isRegistred && <View><Button  title="Accès à votre espace" onPress={()=>navigation.navigate("Balance")}/></View>  }
-    </View>
+        </View>
+    </ScrollView>
+    <View><Button  title="Connexion" onPress={()=>navigation.navigate("Login")}/></View>
+    </>
   )
 
   }

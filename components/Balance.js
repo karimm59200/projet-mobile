@@ -1,126 +1,179 @@
-import {StyleSheet, Text, View, Button, TextInput} from 'react-native';
+import {
+  StyleSheet,
+  Text,
+  View,
+  Button,
+  TextInput,
+  ScrollView,
+} from 'react-native';
 import {useState} from 'react';
+import {SelectList} from 'react-native-dropdown-select-list';
 
 export default function Balance({navigation}) {
+  const [selectedValueEarning, setSelectedValueEarning] = useState();
+  const [selectedValueExpense, setSelectedValueExpense] = useState();
   const [earning, setEarning] = useState([
-    {salary: 0},
-    {deposit: 0},
-    {other: 0},
+    {
+      key: 'Salaire',
+      value: 'Salaire',
+      total: 0,
+    },
+    {key: 'Dépôt', value: 'Dépôt', total: 0},
+    {key: 'Autre', value: 'Autre', total: 0},
   ]);
-  const [expense, setExpense] = useState({
-    travel: 0,
-    home: 0,
-    eTransfer: 0,
-    cheque: 0,
-    autoMoto: 0,
-    various: 0,
-    subscriptionPhoneandInternet: 0,
-    subscriptionSport: 0,
-    hobbies: 0,
-    others: 0,
-  });
-  const [solde, setSolde] = useState(0);
-  const [expenseHome, setExpenseHome] = useState([]);
 
-  const [totalEarning, setTotalEarning] = useState(0)
-  const [totalExpense, setTotalExpense] = useState(0)
+  const [expense, setExpense] = useState([
+    {
+      key: 'Voyages',
+      value: 'Voyages',
+      total: 0,
+    },
+    {
+      key: 'Domestique',
+      value: 'Domestique',
+      total: 0,
+    },
+    {
+      key: 'eTransfer',
+      value: 'eTransfer',
+      total: 0,
+    },
+    {
+      key: 'Chèque',
+      value: 'Chèque',
+      total: 0,
+    },
+    {
+      key: 'Transport',
+      value: 'Transport',
+      total: 0,
+    },
+    {
+      key: 'Abonnements',
+      value: 'Abonnements',
+      total: 0,
+    },
+    {
+      key: 'Loisirs',
+      value: 'Loisirs',
+      total: 0,
+    },
+    {
+      key: 'Autres',
+      value: 'Autres',
+      total: 0,
+    },
+  ]);
+  const [earningValueInput, setEarningValueInput] = useState();
+  const [expenseValueInput, setExpenseValueInput] = useState();
 
-  const setNewEarning = (index,key, earningValue) => {
+  function addEarning() {
+    const value = Number(earningValueInput);
+    if (!selectedValueEarning || isNaN(value)) {
+      return;
+    }
     let earningTemp = earning;
-    earningTemp[index][key] = earningTemp[value][key] + earningValue;
+    earningTemp.forEach(elt => {
+      if (elt.key === selectedValueEarning) {
+        elt.total = elt.total + value;
+        return;
+      }
+    });
+
     setEarning(earningTemp);
-  };
+    calculateTotal();
+  }
 
-  const setNewExpense = (index,key, expenseValue) => {
+  function addExpense() {
+    const value = Number(expenseValueInput);
+    if (!selectedValueExpense || isNaN(value)) {
+      return;
+    }
     let expenseTemp = expense;
-    expenseTemp[index] = expenseTemp[value][key] + expenseValue;
-    setEarning(expenseTemp);
+    expenseTemp.forEach(elt => {
+      if (elt.key === selectedValueExpense) {
+        elt.total = elt.total + value;
+        return;
+      }
+    });
+    setExpense(expenseTemp);
+    calculateTotal();
+  }
+
+  const [totalCount, setTotalCount] = useState(0);
+
+  const calculateTotal = () => {
+    let totalEarning = 0;
+    let totalExpense = 0;
+    earning.map(elt => {
+      totalEarning = totalEarning + elt.total;
+    });
+    expense.map(elt => {
+      totalExpense = totalExpense + elt.total;
+    });
+    setTotalCount(totalEarning - totalExpense);
   };
-
-  const allEarning = ()=>{
-    let total = 0;
-    Object.values(earning).map((val)=>total = total + val)
-    return total;
-  }
-
-  const allExpense = ()=>{
-    let total = 0;
-    Object.values(expense).map((val)=>total = total + val)
-    return total;
-  }
-
-  // const handleSubmit = ()=>{
-  //     console.log("btn handleSubmit")
-  //     console.log(earning)
-  // }
-
-  function AddMoney() {
-    const enter = 0;
-    setSolde(state => {
-      return state + enter;
-    });
-    setEarning(state => {
-      return state.push([...earning, enter]);
-    });
-  }
-
-  function moneyOut() {
-    const out = 0;
-    setSolde(state => {
-      return state - out;
-    });
-    setExpense(state => {
-      return state.push(out);
-    });
-  }
 
   return (
-    <View style={styles.container}>
-      <Text style={{fontSize: 25}}>salaire et autres revenus:{earning}</Text>
-      <TextInput
-        placeholder="entrez vos revenus en euros"
-        keyboardType="numeric"
-        style={{borderWidth: 1, width: 300, margin: 12, borderRadius: 10}}
-        onChangeText={(value)=>setNewEarning('salary',value)}
-      />
+    <ScrollView>
+      <View style={styles.container}>
+        {/* Gains */}
+        <Text style={{fontSize: 25}}>Salaires et autres revenus</Text>
 
-      <Text style={{fontSize: 25}}>Dépenses:{earning}</Text>
-      <TextInput
-        placeholder="entrez vos dépenses en euros"
-        keyboardType="numeric"
-        style={{borderWidth: 1, width: 300, margin: 12, borderRadius: 10}}
-        onChangeText={setExpense}
-      />
-      {/* <TextInput placeholder='entrez vos dépenses de logement' keyboardType='numeric' style={{ borderWidth:1, width:300, margin:12, borderRadius: 10}} onChangeText={ }/> */}
-      {/* {expense ? <Text> vos dépenses :{expense}€</Text> : ''} */}
-      <Text>
-        {earning.map((index, value) => {
+        <SelectList
+          maxHeight={120}
+          setSelected={val => setSelectedValueEarning(val)}
+          data={earning}
+          save="key"
+        />
+        <Text style={{fontSize: 12}}>{selectedValueEarning}</Text>
+        <TextInput
+          keyboardType="numeric"
+          onChangeText={value => setEarningValueInput(value)}
+          style={{borderWidth: 1, width: 300, margin: 12, borderRadius: 10}}
+        />
+        <View>
+          {earning.map((item, index) => {
+            return (
+              <Text key={index}>
+                {item.value} : {item.total}
+              </Text>
+            );
+          })}
+        </View>
+        <View style={{marginVertical: 20}}>
+          <Button title="Enregistrer ce gain" onPress={addEarning} />
+        </View>
+
+        {/* Dépenses */}
+        <Text style={{fontSize: 25}}>Dépenses</Text>
+        <SelectList
+          maxHeight={120}
+          setSelected={val => setSelectedValueExpense(val)}
+          data={expense}
+          save="key"
+        />
+        <Text style={{fontSize: 12}}>{selectedValueExpense}</Text>
+        <TextInput
+          keyboardType="numeric"
+          onChangeText={value => setExpenseValueInput(value)}
+          style={{borderWidth: 1, width: 300, margin: 12, borderRadius: 10}}
+        />
+        {expense.map(item => {
           return (
-            
-            <View>
-              <Text key={value}>hello</Text>
-            </View>
+            <Text key={item.id}>
+              {item.value} : {item.total}
+            </Text>
           );
         })}
-      </Text>
+        <View style={{marginVertical: 20}}>
+          <Button title="Enregistrer cette dépense" onPress={addExpense} />
+        </View>
 
-      {/* {earning && expense ? (
-        <Text>votre nouveau solde:{totalEarning - totalExpense}€</Text>
-      ) : (
-        ''
-      )} */}
-
-      <View style={{marginVertical: 20}}>
-        {/* <Button title="envoyer" onPress={handleSubmit}/> */}
-        <Button title="Entrer d'argent " onPress={() => AddMoney()} />
+        <Text style={{fontSize: 25}}>Solde total</Text>
+        <Text style={{fontSize: 25}}>{totalCount} €</Text>
       </View>
-      <View style={{marginVertical: 20}}>
-        {/* <Button title="envoyer" onPress={handleSubmit}/> */}
-        <Button title="dépenses " onPress={moneyOut} />
-      </View>
-
-      <Button title="Conseils" onPress={() => navigation.navigate('Advice')} />
-    </View>
+    </ScrollView>
   );
 }
 
